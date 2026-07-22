@@ -89,8 +89,8 @@ namespace Microsoft.Health.Fhir.Core.Features.Operations.BulkUpdate.Handlers
             var searchParameterCopy = searchParameters.Select(t => Tuple.Create(t.Item1, t.Item2)).ToList();
 
             // Temporarily add _lastUpdated to the search parameters to mimic the behavior of the processing job. Conditional search will also fail if there are no search criteria.
-            var dateCurrent = new PartialDateTime(Clock.UtcNow);
-            searchParameters.Add(Tuple.Create("_lastUpdated", $"lt{dateCurrent}"));
+            var dateCurrent = "lt" + Clock.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
+            searchParameters.Add(Tuple.Create("_lastUpdated", dateCurrent));
 
             // Should not run bulk Update if any of the search parameters are invalid as it can lead to unpredicatable results
             await _searchService.ConditionalSearchAsync(request.ResourceType, searchParameters, cancellationToken, count: 1, logger: _logger);
